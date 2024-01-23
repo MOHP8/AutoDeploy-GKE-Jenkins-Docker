@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  # Jenkins 服務，用於持續整合和建置
+  jenkins:
+    image: jenkins/jenkins:latest
+    ports:
+      - "8080:8080"  # 對應 Jenkins 的埠號
+    volumes:
+      - jenkins_home:/var/jenkins_home  # 持久化 Jenkins 資料
+
+  # GitHub 服務，這裡需要指定正確的映像檔
+  # github:
+  #   image: <your-github-image>
+    # 如果需要指定其他配置，可以在這裡加入
+    # 例如：environment、volumes 等
+
+  # Kubernetes 服務，這裡需要指定正確的映像檔
+  # kubernetes:
+  #   image: <your-kubernetes-image>
+    # 如果需要指定其他配置，可以在這裡加入
+    # 例如：environment、volumes 等
+
+  # Nginx 服務，用於反向代理 Jenkins
+  nginx_jenkins:
+    image: nginx:latest
+    ports:
+      - "8081:80"  # 對應 Nginx 的埠號
+    # links:
+    #   - jenkins:jenkins  # 與 Jenkins 服務建立連結
+    volumes:
+      - ./services/jenkins_nginx/nginx.conf:/etc/nginx/conf.d/default.conf  # 掛載 Nginx 設定檔
+      - ./Dynamic_data/SSL/fullchain.pem:/etc/nginx/ssl/fullchain.pem  # 掛載 SSL 證書
+      - ./Dynamic_data/SSL/privkey.pem:/etc/nginx/ssl/privkey.pem  # 掛載私鑰文件
+    depends_on:
+      - jenkins  # 依賴 Jenkins 服務啟動
+
+  # MySQL 服務，用於儲存資料
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: pphaopassword
+      MYSQL_DATABASE: telecomsquare
+      MYSQL_USER: docker_user
+      MYSQL_PASSWORD: 1234
+    # command: --bind-address=0.0.0.0  # 允許所有 IP 進行連線
+    volumes:
+      - ./Dynamic_data/MYSQL:/docker-entrypoint-initdb.d  # 將 SQL 文件複製到容器內初始化目錄
+
+  # Flask App 服務，包含 Nginx 反向代理
+  flask_app:
+    build:
+      context: ./services/flask  # 使用指定目錄中的 Dockerfile 構建服務
+    image: myflaskapp
+    ports:
+      - "5000:5000"  # 對應 Flask 應用程式的埠號
+    depends_on:
+      - mysql  # 依賴 MySQL 服務啟動
+    volumes:
+      - ./Dynamic_data/config.py:/demo/config.py  # 掛載 config.py
+
+  # Nginx 服務，用於反向代理 Flask App
+  nginx_flask:
+    image: nginx:latest
+    ports:
+      - "8082:80"  # 對應 Nginx 的埠號
+    # links:
+    #   - flask_app:flask_app  # 與 Flask App 服務建立連結
+    volumes:
+      - ./services/flask_nginx/nginx.conf:/etc/nginx/conf.d/default.conf  # 掛載 Nginx 設定檔
+      - ./Dynamic_data/SSL/fullchain.pem:/etc/nginx/ssl/fullchain.pem  # 掛載 SSL 證書
+      - ./Dynamic_data/SSL/privkey.pem:/etc/nginx/ssl/privkey.pem  # 掛載私鑰文件
+    depends_on:
+      - flask_app  # 依賴 Flask App 服務啟動
+
+volumes:
+  jenkins_home:  # Jenkins 資料持久化卷

@@ -1,0 +1,135 @@
+# 啟動 Docker Compose 服務：
+# 啟動所有在 docker-compose.yml 中定義的服務，-d 選項表示在後台運行。
+# 如果服務的相應映像已存在，則不會重新構建；只有在有更改或缺少映像時才會重新構建。
+docker-compose -p demo_website up --build -d
+
+"與上述相同的動作只是分開進行"
+
+# 撈取鏡像（Docker Hub）：
+# 確保你擁有最新的映像，並從 Docker Hub 下載缺少的映像。
+docker-compose pull
+
+# 重新構建 Docker 鏡像：
+# 如果你想強制重新構建所有服務的映像，可以使用此命令。
+docker-compose build
+
+# 啟動 Docker Compose 服務：
+# 如果映像已經構建，可以使用此命令啟動服務。
+docker-compose up -d
+
+------------------------------------
+
+
+# 檢查服務運行狀態：
+# 確保你的服務已經正確啟動。
+docker-compose ps
+
+# 查看服務日誌（選擇性）：
+# 如果需要查看服務的輸出日誌，可以省略 -d 選項。
+docker-compose logs
+
+# 停止 Docker Compose 服務（選擇性）：
+# 在完成測試或開發時，可以停止運行的服務。
+docker-compose down
+
+
+#刪除關聯的容器和卷
+docker-compose down -v
+
+------------------------------------
+
+# 查詢容器默認的網路
+docker network inspect demo_website_default
+
+# 檢查狀態
+docker-compose -p demo_website ps
+------------------------------------
+使用(kompose把 yml 轉換成 yaml)
+
+#到指定路徑
+cd C:\Users\hao\Desktop\存放\project-root\Kubernetes
+
+#轉換語法(kompose convert -f docker-compose.yml)
+kompose convert -f C:\Users\hao\Desktop\存放\project-root\docker-compose.yml
+
+
+#用以下命令切換 kubectl context 到 Docker Desktop 的 Kubernetes
+kubectl config use-context docker-desktop
+
+#應用你的自定義 YAML 文件
+kubectl apply -f C:\Users\hao\Desktop\存放\project-root\Kubernetes
+kubectl apply -f C:\Users\hao\Desktop\存放\project-root\Kubernetes --namespace=demo-website
+
+
+#Kubernetes 中更新 Deployment
+kubectl set image deployment/flask-app flask-app=your-registry/your-repository:your-tag --namespace=demo-website
+
+# 檢視在 Kubernetes 集群中運行的 Pod 的狀態
+kubectl get pods
+
+# 檢視在 Kubernetes 集群中運行的 Service 的狀態
+kubectl get services
+
+# 檢視在 Kubernetes 集群中運行的 Deployment 的狀態
+kubectl get deployments
+
+# 查詢特定 Pod 的詳細資訊
+kubectl describe pod your-pod-name
+
+# 實時監視 Pods 狀態
+kubectl get pods -w
+
+# 重新拉取 Docker 映像
+docker pull pphao/myflaskapp
+
+# 創建 Deployment
+kubectl apply -f your-deployment-file.yaml
+
+# 查看 Deployment 狀態
+kubectl get deployments
+
+# 查看 Pod 的日誌
+kubectl logs your-pod-name
+
+# 刪除整個 Deployment
+kubectl delete deployment flask-app
+
+# 檢查服務的狀態
+kubectl get services
+
+# 檢查所有狀態
+kubectl get all --namespace=demo-website
+
+#獲取 Pod 的配置
+kubectl get pod flask-app-54c8bf4774-npl2r -o yaml
+
+# 創建ConfigMap
+kubectl create configmap myconfigmap --from-file=C:/Users/hao/Desktop/存放/project-root/Dynamic_data/config.py
+
+# 查看 ConfigMap 的列表
+kubectl get configmaps
+
+#刪除 ConfigMap 的檔案
+kubectl delete configmap myconfigmap --namespace=demo-website
+
+# 删除所有 Kubernetes 中的 Pods
+kubectl delete pods --all
+
+#刪除所有服務(K8S)
+kubectl delete services --all
+
+
+#創建命名空間
+kubectl create namespace <namespace-name>
+
+
+#列出所有命名空間
+kubectl get namespaces
+
+#切換命名空間
+kubectl config set-context --current --namespace=<namespace-name>
+
+#刪除命名空間
+kubectl delete namespace <namespace-name>
+
+

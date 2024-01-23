@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f C:\Users\hao\Desktop\存放\project-root\docker-compose.yml
+    kompose.version: 1.31.2 (a92241f79)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nginx-jenkins
+  name: nginx-jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nginx-jenkins
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f C:\Users\hao\Desktop\存放\project-root\docker-compose.yml
+        kompose.version: 1.31.2 (a92241f79)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/project-root-default: "true"
+        io.kompose.service: nginx-jenkins
+    spec:
+      containers:
+        - image: nginx:latest
+          name: nginx-jenkins
+          ports:
+            - containerPort: 80
+              hostPort: 8081
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

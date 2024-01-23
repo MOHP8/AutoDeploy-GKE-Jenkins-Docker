@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f C:\Users\hao\Desktop\存放\project-root\docker-compose.yml
+    kompose.version: 1.31.2 (a92241f79)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: flask-app
+  name: flask-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: flask-app
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f C:\Users\hao\Desktop\存放\project-root\docker-compose.yml
+        kompose.version: 1.31.2 (a92241f79)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/project-root-default: "true"
+        io.kompose.service: flask-app
+    spec:
+      containers:
+        - image: myflaskapp  # 修改為本地端的影像名稱
+          name: flask-app
+          ports:
+            - containerPort: 5000
+              hostPort: 5000
+              protocol: TCP
+          imagePullPolicy: Never  # 不要從遠端拉取影像
+          volumeMounts:
+            - name: config-volume
+              mountPath: "/demo"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: myconfigmap
+status: {}
